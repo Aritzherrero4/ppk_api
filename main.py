@@ -15,8 +15,8 @@ import json
 import pandas
 
 from ppk import ppk
-import pynrfjprog
-from pynrfjprog import API, Hex
+from pynrfjprog.LowLevel import API as api
+from pynrfjprog.Hex import Hex
 
 
 HEX_FILE_PATH = os.path.sep.join((".", "hex", "ppk.hex"))
@@ -166,7 +166,7 @@ def _replace_file_suffix(file_name, suffix):
 
 def _connect_to_emu(args):
     """Connects to emulator and replaces the PPK firmware if necessary."""
-    nrfjprog_api = pynrfjprog.API.API('NRF52')
+    nrfjprog_api = api('NRF52')
     nrfjprog_api.open()
 
     if args.serial_number:
@@ -175,7 +175,7 @@ def _connect_to_emu(args):
         nrfjprog_api.connect_to_emu_without_snr()
 
     if not args.skip_verify:
-        fw_hex = pynrfjprog.Hex.Hex(HEX_FILE_PATH)
+        fw_hex = Hex(HEX_FILE_PATH)
         if not _verify_firmware(nrfjprog_api, fw_hex):
             if args.force:
                 _write_firmware(nrfjprog_api, fw_hex)

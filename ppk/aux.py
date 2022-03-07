@@ -1,8 +1,8 @@
 import sys
 import os
+from pynrfjprog.LowLevel import API as api
+from pynrfjprog.Hex import Hex
 
-import pynrfjprog
-from pynrfjprog import API, Hex
 HEX_FILE_PATH = os.path.sep.join(("./lib/ppk_api/", "hex", "ppk.hex"))
 
 def verify_firmware(nrfjprog_api, fw_hex):
@@ -31,14 +31,14 @@ def close_and_exit(nrfjprog_api, status):
 
 def connect_to_emu(device_class,serial_num=0):
     """Connects to emulator and replaces the PPK firmware if necessary."""
-    nrfjprog_api = pynrfjprog.API.API(device_class)
+    nrfjprog_api = api (device_class)
     nrfjprog_api.open()
     if serial_num == 0:
         nrfjprog_api.connect_to_emu_without_snr()
     else:
         nrfjprog_api.connect_to_emu_with_snr(serial_num)
 
-    fw_hex = pynrfjprog.Hex.Hex(HEX_FILE_PATH)
+    fw_hex = Hex(HEX_FILE_PATH)
     if not verify_firmware(nrfjprog_api, fw_hex):
         print("PPK firmware verification failed. Writting new PKK firmware to device.")
         if not write_firmware(nrfjprog_api, fw_hex):
